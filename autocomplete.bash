@@ -55,4 +55,6 @@ ln_listpeers
 ln_listfunds
 ln_listpays
 ln_delinvoice
-ln_withdraw""" cn cnt cnm cn-cli
+ln_withdraw
+getnetworkhashps
+getmininginfo""" cn cnt cnm cn-cli
