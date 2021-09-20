@@ -1,8 +1,8 @@
 """Exemple of handling callback from cyphernode"""
-from libcn.libcn import CallbackServer
+from libcn.libcn import CallbackSocketServer
 import json
-class WaitCallback(CallbackServer):
-    """Exemple of using 'CallbackServer' class for handling callbacks and execute actions.
+class WaitCallback(CallbackSocketServer):
+    """Exemple of using 'CallbackSocketServer' class for handling callbacks and execute actions.
     Each functions must reflect the callbacks url used in cyphernode callbacks config.
     For exemple, a watched address with callback url 'http://url:port/conf' need
     a function called 'conf' to be handled by this class. The 'return' statement will
@@ -11,7 +11,6 @@ class WaitCallback(CallbackServer):
     the function do not exist, a string value of 'False' is sent."""
     def __init__(self, port):
         """Initialyse CallbackServer options"""
-        #super.__init__(CallbackServer)
         self.port = port
     def unconf(self):
         """Do stuff with not confirmed paiment callbacks

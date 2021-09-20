@@ -12,6 +12,7 @@ import time
 import socket
 import requests
 import urllib3
+#from flask import Flask, request, jsonify
 class CypherNode:
     """CypherNode class is a cyphernode client library"""
     def __init__(self, \
@@ -19,12 +20,12 @@ class CypherNode:
         key=None, \
         url=None, \
         cert=None, \
-        configfile="{}/.cn/cn.conf".format(os.path.expanduser('~')), \
+        conf="{}/.cn/cn.conf".format(os.path.expanduser('~')), \
         unsecure=False, \
         verbose=False):
         """Cyphernode object reprensenting a cyphernode server"""
         stats_cmd = ['getblockchaininfo', 'getblockhash', \
-            'helloworld', 'installation_info', 'getmempoolinfo']
+            'helloworld', 'installation_info', 'getmininginfo', 'getmempoolinfo', 'getnetworkhashps']
         watcher_cmd = ['watch', 'unwatch', 'watchxpub', \
             'unwatchxpubbyxpub', 'unwatchxpubbylabel', 'getactivewatchesbyxpub',\
             'getactivewatchesbylabel', 'getactivexpubwatches', \
@@ -51,9 +52,9 @@ class CypherNode:
         self.url = url
         self.cert = cert
         try:
-            if configfile:  # If no explicit config provided, search for configfile in ~/.cn/cn.conf
+            if conf:  # If no explicit config provided, search for conf in ~/.cn/cn.conf
                 config = configparser.ConfigParser()
-                config.read(configfile)
+                config.read(conf)
                 for k in config.sections():
                     self.cnid = "{}".format(config.get(k, 'cnid')).replace('"', '')
                     self.key = "{}".format(config.get(k, 'key')).replace('"', '')
@@ -80,7 +81,7 @@ class CypherNode:
             return None
         self.req = ['endpoint', 'headers=headers']
         if unsecure:
-            urllib3.disable_warnings()
+            urllib3.dislocalhostable_warnings()
             self.req.append('verify=False')
         elif self.cert:
                 self.req.append('verify="{}"'.format(self.cert))
@@ -137,6 +138,7 @@ class CypherNode:
                 request = "self.requests.get{}.json()".format(tuple(self.req)).replace('\'', '')
                 #print(request)
                 response = eval(request)
+                #print(response)
                 return response
             else:
                 return None
@@ -171,6 +173,12 @@ class CypherNode:
     def helloworld(self): ###############
         """Helloword exemple, returning error because is not json format"""
         call = 'helloworld'
+        endpoint = "{}/{}".format(self.url, call)
+        response = self.get_data(call, endpoint)
+        return response
+    def getmininginfo(self):
+        """Get mining informations"""
+        call = 'getmininginfo'
         endpoint = "{}/{}".format(self.url, call)
         response = self.get_data(call, endpoint)
         return response
@@ -275,12 +283,21 @@ class CypherNode:
             endpoint = "{}/{}".format(self.url, call)
         response = self.get_data(call, endpoint)
         return response
-    def ln_getroute(self, nodeid, msatoshi, *risk):
+    def getnetworkhashps(self, height=-1, nblocks=120):
+        """Get an estimated hash per seconds for specific block height
+[height nblocks]"""
+        call = 'getnetworkhashps'
+        endpoint = "{}/{}".format(self.url, call)
+        payload = {"height":height, "nblocks":nblocks}
+        payload = json.dumps(payload)
+        response = self.post_data(call, endpoint, payload)
+        return response
+    def ln_getroute(self, nodeid, msatoshi, risk):
         """Get lighning node route
 nodeid msatoshi [risk]""" 
         call = 'ln_getroute'
         if risk:
-            endpoint = "{}/{}/{}/{}/{}".format(self.url, call, nodeid, msatoshi, risk)
+            endpoint = "{}/{}/{}/{}/{}".format(self.url, call, nodeid, msatoshi, risk[0])
         else:
             endpoint = "{}/{}/{}/{}".format(self.url, call, nodeid, msatoshi)
         response = self.get_data(call, endpoint)
@@ -433,12 +450,12 @@ txid [cburl xcburl xconf]"""
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
         return response
-    def spend(self, address, amount, emsg=None):
+    def spend(self, address, amount, emsg=None, confTarget=6, replaceable='true', subtractfeefromamount='false'):
         """Spend from spender wallet
 address amount [eventMessage]"""
         call = 'spend'
         endpoint = "{}/{}".format(self.url, call)
-        payload = {"address":address, "amount":amount, "eventMessage":emsg}
+        payload = {"address":address, "amount":amount, "eventMessage":emsg, "confTarget":confTarget, "replaceable":replaceable, "subtractfeefromamount":subtractfeefromamount}
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
         return response
@@ -447,16 +464,43 @@ address amount [eventMessage]"""
 txid confTarget"""
         call = 'bumpfee'
         endpoint = "{}/{}".format(self.url, call)
-        payload = {"txid":txid, "confTarget":conf_target}
+        payload = {"txid":txid, "confTarget":int(conf_target)}
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
         return response
-    def addtobatch(self, address, amount):
+    def createbatcher(self, label=None, confTarget=6):
+        """Create new batcher
+[label confTarget]"""
+        call = 'createbatcher'
+        endpoint = "{}/{}".format(self.url, call)
+        payload = {"batcherLabel":label,"confTarget":confTarget}
+        payload = json.dumps(payload)
+        response = self.post_data(call, endpoint, payload)
+        return response
+    def updatebatcher(self, label=None, confTarget=6):
+        """Create new batcher
+[label confTarget]"""
+        call = 'updatebatcher'
+        endpoint = "{}/{}".format(self.url, call)
+        payload = {"batcherLabel":label,"confTarget":confTarget}
+        payload = json.dumps(payload)
+        response = self.post_data(call, endpoint, payload)
+        return response
+    def addtobatch(self, address, amount, label, cburl=None):
         """Add a spend from spender wallet to batching
 address amount"""
         call = 'addtobatch'
         endpoint = "{}/{}".format(self.url, call)
-        payload = {"address":address, "amount":amount}
+        payload = {"address":address, "amount":amount, "batcherLabel":label, "webhookUrl":cburl}
+        payload = json.dumps(payload)
+        response = self.post_data(call, endpoint, payload)
+        return response
+    def removefrombatch(self, outputId):
+        """Remove a transaction from batch
+outputId"""
+        call = 'removefrombatch'
+        endpoint = "{}/{}".format(self.url, call)
+        payload = {"outputId":outputId}
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
         return response
@@ -471,10 +515,11 @@ xpub path"""
         return response
     def deriveindex(self, index):
         """Get a list of bitcoin address from an xpub
-xpub path"""
+index"""
         call = 'deriveindex'
         endpoint = "{}/{}/{}".format(self.url, call, index)
-        response = self.get_data(call, endpoint, payload)
+        payload = {"index":index}
+        response = self.post_data(call, endpoint, payload)
         return response
     def ln_create_invoice(self, msatoshi, label=None, description=None, cburl=None, expiry=900):
         """Create a lightning bolt11 invoice
@@ -491,7 +536,7 @@ msatoshi [label description callbackUrl expiry]"""
 bolt11 expected_msatoshi expected_description"""
         call = 'ln_pay'
         endpoint = "{}/{}".format(self.url, call)
-        payload = {"bolt11":bolt11, "expected_msatoshi":expected_msatoshi, \
+        payload = {"bolt11":bolt11, "expected_msatoshi":int(expected_msatoshi), \
             "expected_description":expected_description}
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
@@ -515,7 +560,7 @@ peer msatoshi [callbackUrl]"""
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
         return response
-    def ots_stamp(self, hash, cburl=None):
+    def ots_stamp(self, hashing, cburl=None):
         """Timestamp the hash of a file
 hash [callbackUrl]"""
         call = 'ots_stamp'
@@ -524,7 +569,7 @@ hash [callbackUrl]"""
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
         return response
-    def ots_verify(self, hash, *base64otsfile):
+    def ots_verify(self, hashing, *base64otsfile):
         """Verify a timestamp file
 hash [base64otsfile]"""
         call = 'ots_verify'
@@ -536,7 +581,7 @@ hash [base64otsfile]"""
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
         return response
-    def ots_info(self, hash=None, *base64otsfile):
+    def ots_info(self, hashing=None, *base64otsfile):
         """Get timestamp information
 [hash [base64otsfile]"""
         call = 'ots_info'
@@ -565,7 +610,7 @@ hash [base64otsfile]"""
         #return response
     def executecallbacks(self):###########
         """Not working, for internal use only"""
-        print(_self.executecallbacks._doc__)
+        print(self.executecallbacks.__doc__)
         #call = 'executecallbacks'
         #endpoint = "{}/{}".format(self.url, call)
         #response = self.get_data(call, endpoint)
@@ -578,7 +623,28 @@ hash [base64otsfile]"""
         #response = self.get_data(call, endpoint)
         #return response
 
-class CallbackServer:
+from flask import Flask, Response, request
+class EndpointAction(object):
+    def __init__(self, action):
+        self.action = action
+        self.response = Response(status=200, headers={})
+    def __call__(self, *args):
+        self.action()
+        return self.response
+
+class CallbackFlaskServer(object):
+    app = None
+    def __init__(self, name, port, host='0.0.0.0', debug=False):
+        self.app = Flask(name)
+        self.port = port
+        self.host = host
+        self.debug = debug
+    def run(self):
+        self.app.run(debug=self.debug, host=self.host, port=self.port)
+    def add_endpoint(self, endpoint=None, endpoint_name=None, handler=None):
+        self.app.add_url_rule(endpoint, endpoint_name, EndpointAction(handler), methods=['GET', 'POST'])
+
+class CallbackSocketServer:
     """CallbackServer is a socket server used in a child class to
     listen incoming callbacks request"""
     def __init__(self, port):
