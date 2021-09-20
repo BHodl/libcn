@@ -25,7 +25,7 @@ class CypherNode:
         verbose=False):
         """Cyphernode object reprensenting a cyphernode server"""
         stats_cmd = ['getblockchaininfo', 'getblockhash', \
-            'helloworld', 'installation_info', 'getmininginfo', 'getmempoolinfo', 'getnetworkhashps']
+            'helloworld', 'installation_info', 'getmempoolinfo']
         watcher_cmd = ['watch', 'unwatch', 'watchxpub', \
             'unwatchxpubbyxpub', 'unwatchxpubbylabel', 'getactivewatchesbyxpub',\
             'getactivewatchesbylabel', 'getactivexpubwatches', \
@@ -176,12 +176,6 @@ class CypherNode:
         endpoint = "{}/{}".format(self.url, call)
         response = self.get_data(call, endpoint)
         return response
-    def getmininginfo(self):
-        """Get mining informations"""
-        call = 'getmininginfo'
-        endpoint = "{}/{}".format(self.url, call)
-        response = self.get_data(call, endpoint)
-        return response
     def getmempoolinfo(self):
         """Get memory pool informations"""
         call = 'getmempoolinfo'
@@ -282,15 +276,6 @@ class CypherNode:
         else:
             endpoint = "{}/{}".format(self.url, call)
         response = self.get_data(call, endpoint)
-        return response
-    def getnetworkhashps(self, height=-1, nblocks=120):
-        """Get an estimated hash per seconds for specific block height
-[height nblocks]"""
-        call = 'getnetworkhashps'
-        endpoint = "{}/{}".format(self.url, call)
-        payload = {"height":height, "nblocks":nblocks}
-        payload = json.dumps(payload)
-        response = self.post_data(call, endpoint, payload)
         return response
     def ln_getroute(self, nodeid, msatoshi, risk):
         """Get lighning node route
