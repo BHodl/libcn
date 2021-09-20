@@ -6,8 +6,4 @@
 #cnid = "cyphernode_id"
 #key = "cyphernode_key"
 #url = "cyphernode_url:2009/v0"
-<<<<<<< HEAD
-#cert = "~/.cn/cert.pem"
-=======
 #cert = "/path/to/cacert.pem"
->>>>>>> dev
