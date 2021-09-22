@@ -81,7 +81,7 @@ class CypherNode:
             return None
         self.req = ['endpoint', 'headers=headers']
         if unsecure:
-            urllib3.dislocalhostable_warnings()
+            urllib3.disable_warnings()
             self.req.append('verify=False')
         elif self.cert:
                 self.req.append('verify="{}"'.format(self.cert))
