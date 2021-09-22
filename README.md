@@ -39,10 +39,10 @@ This project is experimental, so be sure you understand what this program does, 
 
 Clone libcn :
 ```
-~/$ git clone https://github.com/tomtibo/libcn/
+~/$ git clone https://github.com/BHodl/libcn.git
 ```
 ****
-By default, `CypherNode` class and `cn-cli` utility will look for a config file at $HOME/.cn/cn.conf. Optionaly you can specify the config file location with `configfile` argument OR using `cnid`, `key` and `url` arguments directly. When using `cn-cli` command line utility, using `--cnid`, `--key` and `--url` prevent secrets to be stored as clear text on the filesystem.
+By default, `CypherNode` class and `cn-cli` utility will look for a config file at $HOME/.cn/cn.conf. Optionaly you can specify the config file location with `conf` argument OR using `cnid`, `key` and `url` arguments directly. When using `cn-cli` command line utility, using `--cnid`, `--key` and `--url` prevent secrets to be stored as clear text on the filesystem.
 
 [Optional]
 ```
@@ -62,6 +62,7 @@ The configuration file should look like this :
 #cnid = "cyphernode_id"
 #key = "cyphernode_key"
 #url = "cyphernode_url:2009/v0"
+#cert = "/path/to/cacert.pem"
 ```
 
 ****
@@ -96,7 +97,7 @@ optional arguments:
                         List command available
   -i COMMAND, --info COMMAND
                         Get command informations
-  -c CONFIGFILE, --configfile CONFIGFILE
+  -c CONF, --conf CONF
                         Define the configuration file absolute path
   -u, --unsecure        Ignore ssl certificate error
   -j, --json            Use json indentation formating
@@ -137,9 +138,9 @@ Then logout and restart a new shell session.
 
 CallbackServer is a socket server object used in a child class to listen incoming callbacks request and execute actions. Each functions must reflect the callbacks url used in cyphernode callbacks config. For exemple, a watched address with callback url `http://url:port/conf` need a function called `conf` to be handled by this child class. The 'return' statement will send the returned value to the coresponding response topic. If no 'return' statement is used, a string value of 'True' is sent. If the function fail or if the function do not exist, a string value of 'False' is sent. 
 
-WARNING! Be aware that CallbackServer will receive and send data as clear text, so it is NOT recommended to use it over the internet. It's build to be use in a secure docker network, on a secure local network or over secure VPN network. WARNING!
+WARNING! Be aware that callback server will receive and send data as clear text, so it is NOT recommended to use it over the internet. It's build to be use in a secure docker network, on a secure local network or over secure VPN network. WARNING!
 
-For a full exemple of how to use `CallbackServer`, see the server_exemple.py file.
+For a full exemple of how to use `CallbackFlaskServer`, see the server_exemple1.py file, and server_exemple2.py for a `CallbackSocketServer` exemple
 
 
 **Things that do not work**
