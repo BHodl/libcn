@@ -292,14 +292,11 @@ class CypherNode:
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
         return response
-    def ln_getroute(self, nodeid, msatoshi, risk):
+    def ln_getroute(self, nodeid, msatoshi, risk=0):
         """Get lighning node route
 nodeid msatoshi [risk]""" 
         call = 'ln_getroute'
-        if risk:
-            endpoint = "{}/{}/{}/{}/{}".format(self.url, call, nodeid, msatoshi, risk[0])
-        else:
-            endpoint = "{}/{}/{}/{}".format(self.url, call, nodeid, msatoshi)
+        endpoint = "{}/{}/{}/{}/{}".format(self.url, call, nodeid, msatoshi, risk)
         response = self.get_data(call, endpoint)
         return response
     def get_txns_by_watchlabel(self, label, *count):
