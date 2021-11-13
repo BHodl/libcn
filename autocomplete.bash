@@ -56,6 +56,7 @@ ln_listfunds
 ln_listpays
 ln_delinvoice
 ln_withdraw
+<<<<<<< HEAD
 getnetworkhashps
 getmininginfo
 elements_getblockchaininfo
@@ -68,3 +69,6 @@ elements_gettransaction
 elements_getwalletinfo
 elements_getnewaddress
 elements_spend""" cn cnc cnt cnm cn-cli
+=======
+""" cn cnt cnm cn-cli
+>>>>>>> mining
