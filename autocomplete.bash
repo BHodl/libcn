@@ -57,4 +57,14 @@ ln_listpays
 ln_delinvoice
 ln_withdraw
 getnetworkhashps
-getmininginfo""" cn cnt cnm cn-cli
+getmininginfo
+elements_getblockchaininfo
+elements_getmempoolinfo
+elements_watch
+elements_unwatch
+elements_validateaddress
+elements_getbestblockhash
+elements_gettransaction
+elements_getwalletinfo
+elements_getnewaddress
+elements_spend""" cn cnc cnt cnm cn-cli

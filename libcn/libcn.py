@@ -24,19 +24,19 @@ class CypherNode:
         unsecure=False, \
         verbose=False):
         """Cyphernode object reprensenting a cyphernode server"""
-        stats_cmd = ['getblockchaininfo', 'getblockhash', \
-            'helloworld', 'installation_info', 'getmempoolinfo']
-        watcher_cmd = ['watch', 'unwatch', 'watchxpub', \
+        stats_cmd = ['getblockchaininfo', 'elements_getblockchaininfo', 'getblockhash', \
+            'helloworld', 'installation_info', 'getmempoolinfo', 'elements_getmempoolinfo']
+        watcher_cmd = ['watch', 'elements_watch', 'unwatch', 'elements_unwatch', 'watchxpub', \
             'unwatchxpubbyxpub', 'unwatchxpubbylabel', 'getactivewatchesbyxpub',\
-            'getactivewatchesbylabel', 'getactivexpubwatches', \
+            'getactivewatchesbylabel', 'getactivexpubwatches', 'elements_validateaddress', \
                 'watchtxid', 'getactivewatches', 'get_txns_by_watchlabel',\
-            'get_unused_addresses_by_watchlabel', 'getbestblockhash', \
-                'getbestblockinfo', 'getblockinfo', 'gettransaction',\
+            'get_unused_addresses_by_watchlabel', 'getbestblockhash', 'elements_getbestblockhash', \
+                'getbestblockinfo', 'getblockinfo', 'gettransaction', 'elements_gettransaction', 'elements_getwalletinfo', \
             'ln_getinfo', 'ln_create_invoice', 'ln_getconnectionstring', \
                 'ln_decodebolt11', 'ln_listpeers', 'ln_getroute', 'ln_listpays']
         spender_cmd = ['getbalance', 'getbalances', \
-            'getbalancebyxpub', 'getbalancebyxpublabel', 'getnewaddress',\
-            'spend', 'bumpfee', 'addtobatch', 'batchspend', 'deriveindex', \
+            'getbalancebyxpub', 'getbalancebyxpublabel', 'getnewaddress', 'elements_getnewaddress',\
+            'spend', 'elements_spend', 'bumpfee', 'addtobatch', 'batchspend', 'deriveindex', \
                 'derivepubpath', 'ln_pay', 'ln_newaddr', 'ots_stamp', 'ots_info', 'ots_verify',\
             'ots_getfile', 'ln_getinvoice', 'ln_decodebolt11', 'ln_connectfund', \
             'ln_delinvoice', 'ln_listfunds', 'ln_withdraw', 'get_txns_spending']
@@ -164,6 +164,12 @@ class CypherNode:
         endpoint = "{}/{}".format(self.url, call)
         response = self.get_data(call, endpoint)
         return response
+    def elements_getblockchaininfo(self):
+        """Get blockchain informations"""
+        call = 'elements_getblockchaininfo'
+        endpoint = "{}/{}".format(self.url, call)
+        response = self.get_data(call, endpoint)
+        return response
     def installation_info(self):
         """Get cyphernode installation informations"""
         call = 'installation_info'
@@ -182,9 +188,21 @@ class CypherNode:
         endpoint = "{}/{}".format(self.url, call)
         response = self.get_data(call, endpoint)
         return response
+    def elements_getmempoolinfo(self):
+        """Get memory pool informations"""
+        call = 'elements_getmempoolinfo'
+        endpoint = "{}/{}".format(self.url, call)
+        response = self.get_data(call, endpoint)
+        return response
     def getbestblockhash(self):
         """Get the hash of the best block"""
         call = 'getbestblockhash'
+        endpoint = "{}/{}".format(self.url, call)
+        response = self.get_data(call, endpoint)
+        return response
+    def elements_getbestblockhash(self):
+        """Get the hash of the best block"""
+        call = 'elements_getbestblockhash'
         endpoint = "{}/{}".format(self.url, call)
         response = self.get_data(call, endpoint)
         return response
@@ -277,6 +295,30 @@ class CypherNode:
             endpoint = "{}/{}".format(self.url, call)
         response = self.get_data(call, endpoint)
         return response
+    def elements_getnewaddress(self, *typeid):
+        """Get new spending bitcoin address
+[(bech32,legacy,p2sh-segwit)]"""
+        call = 'elements_getnewaddress'
+        if typeid:
+            endpoint = "{}/{}/{}".format(self.url, call, typeid[0])
+        else:
+            endpoint = "{}/{}".format(self.url, call)
+        response = self.get_data(call, endpoint)
+        return response
+    def elements_getwalletinfo(self, *typeid):
+        """Get new spending bitcoin address
+[(bech32,legacy,p2sh-segwit)]"""
+        call = 'elements_getwalletinfo'
+        endpoint = "{}/{}".format(self.url, call)
+        response = self.get_data(call, endpoint)
+        return response
+    def elements_validateaddress(self, address):
+        """Validate liquid bitcoin address address
+address"""
+        call = 'elements_validateaddress'
+        endpoint = "{}/{}/{}".format(self.url, call, address)
+        response = self.get_data(call, endpoint)
+        return response
     def ln_getroute(self, nodeid, msatoshi, risk):
         """Get lighning node route
 nodeid msatoshi [risk]""" 
@@ -322,6 +364,13 @@ address"""
         endpoint = "{}/{}/{}".format(self.url, call, address)
         response = self.get_data(call, endpoint)
         return response
+    def elements_unwatch(self, address):
+        """Remove an address from the watch list
+address"""
+        call = 'elements_unwatch'
+        endpoint = "{}/{}/{}".format(self.url, call, address)
+        response = self.get_data(call, endpoint)
+        return response
     def unwatchxpubbyxpub(self, xpub):
         """Remove an xpub from watch list using xpub
 xpub"""
@@ -361,6 +410,13 @@ hash"""
         """Get transactions informations by txid
 txid"""
         call = 'gettransaction'
+        endpoint = "{}/{}/{}".format(self.url, call, txid)
+        response = self.get_data(call, endpoint)
+        return response
+    def elements_gettransaction(self, txid):
+        """Get transactions informations by txid
+txid"""
+        call = 'elements_gettransaction'
         endpoint = "{}/{}/{}".format(self.url, call, txid)
         response = self.get_data(call, endpoint)
         return response
@@ -414,6 +470,16 @@ address [unconfirmedCallbackURL confirmedCallbackURL eventMessage]"""
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
         return response
+    def elements_watch(self, address, assetid, cburl0=None, cburl1=None, emsg=None):
+        """Add liquid address to watches list
+address assetid [unconfirmedCallbackURL confirmedCallbackURL eventMessage]"""
+        call = 'elements_watch'
+        endpoint = "{}/{}".format(self.url, call)
+        payload = {"address":address, "assetId":assetid, "unconfirmedCallbackURL":cburl0, \
+            "confirmedCallbackURL":cburl1, "eventMessage":emsg}
+        payload = json.dumps(payload)
+        response = self.post_data(call, endpoint, payload)
+        return response
     def watchxpub(self, xpub, label=None, path="0/n", \
         nstart=0, cburl0=None, cburl1=None): # "0/1/n" electrum = 0/n(receiving) 1/n(change)
         """Add xpub to watches list
@@ -437,10 +503,19 @@ txid [cburl xcburl xconf]"""
         return response
     def spend(self, address, amount, emsg=None, confTarget=6, replaceable='true', subtractfeefromamount='false'):
         """Spend from spender wallet
-address amount [eventMessage]"""
+address amount [eventMessage[None] conftarget[6], replaceable[true], subtractfeefromamount[false]]"""
         call = 'spend'
         endpoint = "{}/{}".format(self.url, call)
         payload = {"address":address, "amount":amount, "eventMessage":emsg, "confTarget":confTarget, "replaceable":replaceable, "subtractfeefromamount":subtractfeefromamount}
+        payload = json.dumps(payload)
+        response = self.post_data(call, endpoint, payload)
+        return response
+    def elements_spend(self, address, amount, assetid, emsg=None, confTarget=6, replaceable='true', subtractfeefromamount='false'):
+        """Spend from spender wallet
+address amount assetid [eventMessage[None] conftarget[6], replaceable[true], subtractfeefromamount[false]]"""
+        call = 'elements_spend'
+        endpoint = "{}/{}".format(self.url, call)
+        payload = {"address":address, "amount":amount, "assetid": assetid, "eventMessage":emsg, "confTarget":confTarget, "replaceable":replaceable, "subtractfeefromamount":subtractfeefromamount}
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
         return response
