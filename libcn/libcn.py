@@ -463,8 +463,9 @@ label"""
         response = self.get_data(call, endpoint)
         return response
     # Post requests
-    def getnetworkhashps(self, height=None, nblocks=None):
-        """Get an estimation of the bitcoin hashrate"""
+    def getnetworkhashps(self, height=-1, nblocks=120):
+        """Get an estimated hash per seconds for specific block height
+[height nblocks]"""
         call = 'getnetworkhashps'
         endpoint = "{}/{}".format(self.url, call)
         payload = {"height":height, "nblocks":nblocks}
