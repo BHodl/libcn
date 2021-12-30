@@ -24,8 +24,8 @@ class CypherNode:
         unsecure=False, \
         verbose=False):
         """Cyphernode object reprensenting a cyphernode server"""
-        stats_cmd = ['getblockchaininfo', 'elements_getblockchaininfo', 'getblockhash', \
-            'helloworld', 'installation_info', 'getmempoolinfo', 'elements_getmempoolinfo']
+        stats_cmd = ['getblockchaininfo', 'elements_getblockchaininfo', 'getblockhash', 'getnetworkhashps'\
+            'helloworld', 'getmininginfo', 'installation_info', 'getmempoolinfo', 'elements_getmempoolinfo']
         watcher_cmd = ['watch', 'elements_watch', 'unwatch', 'elements_unwatch', 'watchxpub', \
             'unwatchxpubbyxpub', 'unwatchxpubbylabel', 'getactivewatchesbyxpub',\
             'getactivewatchesbylabel', 'getactivexpubwatches', 'elements_validateaddress', \
@@ -179,6 +179,12 @@ class CypherNode:
     def helloworld(self): ###############
         """Helloword exemple, returning error because is not json format"""
         call = 'helloworld'
+        endpoint = "{}/{}".format(self.url, call)
+        response = self.get_data(call, endpoint)
+        return response
+    def getmininginfo(self):
+        """Get mining informations"""
+        call = 'getmininginfo'
         endpoint = "{}/{}".format(self.url, call)
         response = self.get_data(call, endpoint)
         return response
@@ -457,6 +463,14 @@ label"""
         response = self.get_data(call, endpoint)
         return response
     # Post requests
+    def getnetworkhashps(self, height=None, nblocks=None):
+        """Get an estimation of the bitcoin hashrate"""
+        call = 'getnetworkhashps'
+        endpoint = "{}/{}".format(self.url, call)
+        payload = {"height":height, "nblocks":nblocks}
+        payload = json.dumps(payload)
+        response = self.post_data(call, endpoint, payload)
+        return response
     def watch(self, address, cburl0=None, cburl1=None, emsg=None):
         """Add bitcoin address to watches list
 address [unconfirmedCallbackURL confirmedCallbackURL eventMessage]"""
@@ -575,8 +589,7 @@ xpub path"""
 index"""
         call = 'deriveindex'
         endpoint = "{}/{}/{}".format(self.url, call, index)
-        payload = {"index":index}
-        response = self.post_data(call, endpoint, payload)
+        response = self.get_data(call, endpoint)
         return response
     def ln_create_invoice(self, msatoshi, label=None, description=None, cburl=None, expiry=900):
         """Create a lightning bolt11 invoice
