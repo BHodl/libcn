@@ -151,7 +151,7 @@ class CypherNode:
             if headers and endpoint and payload:
                 self.req.append('data=payload')
                 request = "self.requests.post{}.json()".format(tuple(self.req)).replace('\'', '')
-                #print(request)
+                print(request)
                 response = eval(request)
                 return response
             else:
