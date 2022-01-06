@@ -5,6 +5,7 @@ getblockhash
 helloworld
 installation_info
 getmempoolinfo
+bitcoin_estimatesmartfee
 watch
 unwatch
 watchxpub

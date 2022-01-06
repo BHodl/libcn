@@ -24,7 +24,7 @@ class CypherNode:
         unsecure=False, \
         verbose=False):
         """Cyphernode object reprensenting a cyphernode server"""
-        stats_cmd = ['getblockchaininfo', 'getblockhash', \
+        stats_cmd = ['getblockchaininfo', 'getblockhash', 'bitcoin_estimatesmartfee', \
             'helloworld', 'installation_info', 'getmininginfo', 'getmempoolinfo', 'getnetworkhashps']
         watcher_cmd = ['watch', 'unwatch', 'watchxpub', \
             'unwatchxpubbyxpub', 'unwatchxpubbylabel', 'getactivewatchesbyxpub',\
@@ -149,7 +149,8 @@ class CypherNode:
         if call in self.auth:
             headers = self.get_headers()
             if headers and endpoint and payload:
-                self.req.append('data=payload')
+                if not 'data=payload' in self.req:
+                    self.req.append('data=payload')
                 request = "self.requests.post{}.json()".format(tuple(self.req)).replace('\'', '')
                 #print(request)
                 response = eval(request)
@@ -282,6 +283,15 @@ class CypherNode:
         else:
             endpoint = "{}/{}".format(self.url, call)
         response = self.get_data(call, endpoint)
+        return response
+    def bitcoin_estimatesmartfee(self, confTarget=2):
+        """Get estimated fee
+[confTarget]"""
+        call = 'bitcoin_estimatesmartfee'
+        endpoint = "{}/{}".format(self.url, call)
+        payload = {"confTarget":confTarget}
+        payload = json.dumps(payload)
+        response = self.post_data(call, endpoint, payload)
         return response
     def getnetworkhashps(self, height=-1, nblocks=120):
         """Get an estimated hash per seconds for specific block height
