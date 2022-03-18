@@ -548,7 +548,7 @@ bolt11 expected_msatoshi expected_description"""
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
         return response
-    def ln_withdraw(self, address, satoshi=None, feerate="normal", withdrawall="false"):
+    def ln_withdraw(self, address, satoshi="all", feerate="normal", withdrawall="false"):
         """Withdraw from lightning to bitcoin address
 address [satoshi feerate withdrawall]"""
         call = 'ln_withdraw'
