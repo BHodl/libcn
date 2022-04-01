@@ -277,14 +277,11 @@ class CypherNode:
             endpoint = "{}/{}".format(self.url, call)
         response = self.get_data(call, endpoint)
         return response
-    def ln_getroute(self, nodeid, msatoshi, risk):
+    def ln_getroute(self, nodeid, msatoshi, risk=0):
         """Get lighning node route
-nodeid msatoshi [risk]""" 
+nodeid msatoshi [risk=0]""" 
         call = 'ln_getroute'
-        if risk:
-            endpoint = "{}/{}/{}/{}/{}".format(self.url, call, nodeid, msatoshi, risk[0])
-        else:
-            endpoint = "{}/{}/{}/{}".format(self.url, call, nodeid, msatoshi)
+        endpoint = "{}/{}/{}/{}/{}".format(self.url, call, nodeid, msatoshi, risk)
         response = self.get_data(call, endpoint)
         return response
     def get_txns_by_watchlabel(self, label, *count):
@@ -435,9 +432,9 @@ txid [cburl xcburl xconf]"""
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
         return response
-    def spend(self, address, amount, emsg=None, confTarget=6, replaceable='true', subtractfeefromamount='false'):
+    def spend(self, address, amount, emsg=None, confTarget=6, replaceable=True, subtractfeefromamount=False):
         """Spend from spender wallet
-address amount [eventMessage]"""
+address amount [emsg=None, confTarget=6, replaceable=True, subtractfeefromamount=False]"""
         call = 'spend'
         endpoint = "{}/{}".format(self.url, call)
         payload = {"address":address, "amount":amount, "eventMessage":emsg, "confTarget":confTarget, "replaceable":replaceable, "subtractfeefromamount":subtractfeefromamount}
@@ -503,8 +500,7 @@ xpub path"""
 index"""
         call = 'deriveindex'
         endpoint = "{}/{}/{}".format(self.url, call, index)
-        payload = {"index":index}
-        response = self.post_data(call, endpoint, payload)
+        response = self.post_data(call, endpoint)
         return response
     def ln_create_invoice(self, msatoshi, label=None, description=None, cburl=None, expiry=900):
         """Create a lightning bolt11 invoice
