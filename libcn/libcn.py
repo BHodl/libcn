@@ -151,8 +151,9 @@ class CypherNode:
             if headers and endpoint and payload:
                 self.req.append('data=payload')
                 request = "self.requests.post{}.json()".format(tuple(self.req)).replace('\'', '')
-                print(request)
+                #print(request)
                 response = eval(request)
+                #print(response)
                 return response
             else:
                 return None
@@ -513,7 +514,7 @@ txid [cburl xcburl xconf]"""
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
         return response
-    def spend(self, address, amount, emsg=None, confTarget=6, replaceable='true', subtractfeefromamount='false'):
+    def spend(self, address, amount, emsg=None, confTarget=6, replaceable=True, subtractfeefromamount=False):
         """Spend from spender wallet
 address amount [eventMessage[None] conftarget[6], replaceable[true], subtractfeefromamount[false]]"""
         call = 'spend'
@@ -522,9 +523,9 @@ address amount [eventMessage[None] conftarget[6], replaceable[true], subtractfee
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
         return response
-    def elements_spend(self, address, amount, assetid, emsg=None, confTarget=6, replaceable='true', subtractfeefromamount='false'):
+    def elements_spend(self, address, amount, assetid=None, emsg=None, confTarget=6, replaceable=True, subtractfeefromamount=False):
         """Spend from spender wallet
-address amount assetid [eventMessage[None] conftarget[6], replaceable[true], subtractfeefromamount[false]]"""
+address amount [assetid[None] eventMessage[None] conftarget[6], replaceable[true], subtractfeefromamount[false]]"""
         call = 'elements_spend'
         endpoint = "{}/{}".format(self.url, call)
         payload = {"address":address, "amount":amount, "assetid": assetid, "eventMessage":emsg, "confTarget":confTarget, "replaceable":replaceable, "subtractfeefromamount":subtractfeefromamount}
