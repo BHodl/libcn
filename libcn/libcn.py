@@ -483,7 +483,7 @@ address [unconfirmedCallbackURL confirmedCallbackURL eventMessage]"""
         payload = json.dumps(payload)
         response = self.post_data(call, endpoint, payload)
         return response
-    def elements_watch(self, address, assetid, cburl0=None, cburl1=None, emsg=None):
+    def elements_watch(self, address, assetid=None, cburl0=None, cburl1=None, emsg=None):
         """Add liquid address to watches list
 address assetid [unconfirmedCallbackURL confirmedCallbackURL eventMessage]"""
         call = 'elements_watch'
