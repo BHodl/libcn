@@ -333,6 +333,15 @@ nodeid msatoshi [risk]"""
         endpoint = "{}/{}/{}/{}/{}".format(self.url, call, nodeid, msatoshi, risk)
         response = self.get_data(call, endpoint)
         return response
+    def bitcoin_estimatesmartfee(self, confTarget=2):
+        """Get estimated fee
+[confTarget]"""
+        call = 'bitcoin_estimatesmartfee'
+        endpoint = "{}/{}".format(self.url, call)
+        payload = {"confTarget":confTarget}
+        payload = json.dumps(payload)
+        response = self.post_data(call, endpoint, payload)
+        return response
     def get_txns_by_watchlabel(self, label, *count):
         """Get transaction not spend by watch label
 label [count]"""
