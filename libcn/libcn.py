@@ -25,7 +25,8 @@ class CypherNode:
         verbose=False):
         """Cyphernode object reprensenting a cyphernode server"""
         stats_cmd = ['getblockchaininfo', 'elements_getblockchaininfo', 'getblockhash', 'getnetworkhashps'\
-            'helloworld', 'getmininginfo', 'installation_info', 'getmempoolinfo', 'elements_getmempoolinfo']
+            'helloworld', 'getmininginfo', 'installation_info', 'getmempoolinfo', 'elements_getmempoolinfo', \
+            'bitcoin_estimatesmartfee']
         watcher_cmd = ['watch', 'elements_watch', 'unwatch', 'elements_unwatch', 'watchxpub', \
             'unwatchxpubbyxpub', 'unwatchxpubbylabel', 'getactivewatchesbyxpub',\
             'getactivewatchesbylabel', 'getactivexpubwatches', 'elements_validateaddress', \
@@ -135,6 +136,8 @@ class CypherNode:
         if call in self.auth:
             headers = self.get_headers()
             if headers and endpoint:
+                if 'data=payload' in self.req:
+                    self.req.remove('data=payload')
                 request = "self.requests.get{}.json()".format(tuple(self.req)).replace('\'', '')
                 #print(request)
                 response = eval(request)
@@ -149,7 +152,8 @@ class CypherNode:
         if call in self.auth:
             headers = self.get_headers()
             if headers and endpoint and payload:
-                self.req.append('data=payload')
+                if not 'data=payload' in self.req:
+                    self.req.append('data=payload')
                 request = "self.requests.post{}.json()".format(tuple(self.req)).replace('\'', '')
                 #print(request)
                 response = eval(request)
